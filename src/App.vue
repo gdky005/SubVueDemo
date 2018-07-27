@@ -7,6 +7,9 @@
     <p/>
 
 
+
+
+
     <el-button @click="centerDialogVisible = true" type="primary">点击打开 Dialog</el-button>
 
     <el-dialog
@@ -19,7 +22,6 @@
         title="请先注册一个账号吧"
         :visible.sync="innerVisible"
         append-to-body>
-
 
         <el-form :model="registerUserInfo" :rules="registerUserInfoRules" ref="registerUserInfo">
 
@@ -41,7 +43,6 @@
             </el-input>
           </el-form-item>
 
-
           <el-form-item prop="r_email">
             <el-input placeholder="邮箱地址" type="email" v-model="registerUserInfo.r_email" clearable>
               <template slot="prepend">邮箱地址：</template>
@@ -50,14 +51,10 @@
 
         </el-form>
 
-
         <span slot="footer" class="dialog-footer">
           <el-button @click="register(true)">取消</el-button>
-          <el-button style="text-align: center;" type="primary" @click="register(false)"
-                     :disabled="registerBtnState">确定</el-button>
+          <el-button style="text-align: center;" type="primary" @click="register(false)" :disabled="registerBtnState">确定</el-button>
         </span>
-
-
       </el-dialog>
 
       <el-form :model="userInfo" :rules="registerUserInfoRules" ref="userInfo">
@@ -68,26 +65,25 @@
         </el-form-item>
 
         <el-form-item prop="user_password">
-          <el-input placeholder="密码" type="password" v-model="userInfo.user_password" clearable>-->
+          <el-input placeholder="密码" type="password" v-model="userInfo.user_password" clearable>
             <template slot="prepend">密　　码：</template>
           </el-input>
         </el-form-item>
       </el-form>
+
       <div style="text-align: center">
         <el-button type="text" size="mini">如有任何疑问请添加微信：gdky005</el-button>
       </div>
+
       <span slot="footer" class="dialog-footer">
         <el-button @click="innerVisible = true">注册</el-button>
         <el-button style="text-align: center;" type="primary" @click="login">登录</el-button>
       </span>
+
     </el-dialog>
 
 
 
-
-    <div>
-      <h1>hello!</h1>
-    </div>
   </div>
 </template>
 
