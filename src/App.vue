@@ -14,18 +14,18 @@
         <el-button type="primary" size="medium" slot="reference" @click="subscribeBtn">订阅按钮</el-button>
       </el-popover>
 
-      <el-dialog title="提示" :visible.sync="centerDialogVisible" width="30%" center>
-          <span>{{ dialogText }}</span>
-          <span slot="footer" class="dialog-footer">
+      <el-dialog title="提示" :visible.sync="subDialogState" width="30%" center>
+        <span>{{ dialogText }}</span>
+        <span slot="footer" class="dialog-footer">
            <el-button @click="cancelSub">取 消</el-button>
-           <el-button type="primary" @click="requestData">确 定</el-button>
+           <el-button type="primary" @click="subContent" :loading="subContentBtnState">确 定</el-button>
           </span>
       </el-dialog>
 
 
       <el-dialog
         title="登录提醒"
-        :visible.sync="centerDialogVisible"
+        :visible.sync="loginDialogState"
         width="40%" center>
 
         <el-dialog
@@ -95,10 +95,8 @@
       </el-dialog>
 
 
+      <!--Tampermonkey h5代码结束点 -->
     </div>
-
-
-    <!--Tampermonkey h5代码结束点 -->
   </div>
 </template>
 
@@ -142,6 +140,16 @@
       };
 
       return {
+
+        // 订阅按钮的状态
+        subDialogState: false,
+
+        // 订阅对话框中的确定按钮的 loading 的状态
+        subContentBtnState: false,
+
+        // 用户登录的状态
+        userIsLogin: false,
+
         // 用户注册信息
         registerUserInfo: {
           r_name: '',
@@ -182,7 +190,8 @@
         },
 
         //登录框状态
-        centerDialogVisible: false,
+        loginDialogState: false,
+
         dialogVisible: false,
         innerVisible: false,
 
@@ -194,7 +203,6 @@
         message: "",
         dialogText: "是否真的要订阅？",
         dialogVisible: false,
-        centerDialogVisible: false,
 
         // 影片订阅信息
         name: '',
@@ -211,7 +219,7 @@
 
         this.$refs.userInfo.validate((valid) => {
           if (valid) {
-            this.centerDialogVisible = false;
+            this.loginDialogState = false;
             this.innerVisible = false;
 
             this.$notify({
@@ -268,11 +276,12 @@
         this.$confirm('确认关闭？')
           .then(_ => {
             done();
-          }).catch(_ => {});
+          }).catch(_ => {
+        });
       },
 
       cancelSub() {
-        this.centerDialogVisible = false
+        this.subDialogState = false;
         this.$message({
           message: '取消订阅',
           type: 'warning'
@@ -280,7 +289,17 @@
       },
 
       subscribeBtn() {
-        this.centerDialogVisible = true;
+
+        if (this.userIsLogin) {
+          this.$message("你已经登录啦！");
+          this.subDialogState = true;
+        } else {
+          this.$message("你还没登录呢！请先登录");
+          this.loginDialogState = true;
+        }
+
+        // return;
+
 
         var url = document.URL;
         var name = $("h1.font14w")[0].innerText;
@@ -295,19 +314,64 @@
         this.url = url;
       },
 
-      requestData() {
-        this.centerDialogVisible = false;
+      subContent() {
+        // 订阅成功后 可以请求数据, 然后 确定按钮 转圈，成功和失败后都给予提示。
+        // this.subDialogState = false;
+        this.subContentBtnState = true;
 
         var params = 'pid=' + this.pid;
-        params+= '&name=' + this.name;
-        params+= '&url=' + this.url;
+        params += '&name=' + this.name;
+        params += '&url=' + this.url;
 
         var that = this;
 
         GM_xmlhttpRequest({
           method: 'GET',
           url: "http://zkteam.cc/Subscribe/add?" + params,
-          onload: function(result) {
+          onload: function (result) {
+            that.subContentBtnState = false;
+
+            var responseContent = result.responseText;
+            console.log(responseContent);
+
+            var objs = JSON.parse(responseContent);
+            var code = objs['code'];
+            var message = objs['message'];
+
+            console.log(code + "," + message);
+
+            if (code === 0) {
+              that.$message({
+                message: '订阅成功！',
+                type: 'success'
+              });
+            } else {
+              that.$message({
+                showClose: true,
+                message: '订阅失败!',
+                type: 'error'
+              });
+            }
+
+            that.subDialogState = false;
+          }
+        });
+
+      },
+
+      requestData() {
+        this.subDialogState = false;
+
+        var params = 'pid=' + this.pid;
+        params += '&name=' + this.name;
+        params += '&url=' + this.url;
+
+        var that = this;
+
+        GM_xmlhttpRequest({
+          method: 'GET',
+          url: "http://zkteam.cc/Subscribe/add?" + params,
+          onload: function (result) {
             //eval(result.responseText);
             console.log(result.responseText);
 
