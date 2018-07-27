@@ -3,17 +3,12 @@
 
     <h1>用户注册和登录内部对话框 调试</h1>
 
-    <!--<el-input placeholder="您的用户名或者邮箱" v-model="input3" clearable>-->
-    <!--<template slot="prepend">用户名：</template>-->
-    <!--</el-input>-->
-
-    <p/>
-    <p/>
     <p/>
     <p/>
 
 
     <el-button @click="centerDialogVisible = true" type="primary">点击打开 Dialog</el-button>
+
     <el-dialog
       title="登录提醒"
       :visible.sync="centerDialogVisible"
@@ -77,36 +72,21 @@
             <template slot="prepend">密　　码：</template>
           </el-input>
         </el-form-item>
-        <!--<el-form-item >-->
-        <!--</el-form-item>-->
       </el-form>
       <div style="text-align: center">
         <el-button type="text" size="mini">如有任何疑问请添加微信：gdky005</el-button>
       </div>
-      <!--<div style="padding: 20px auto auto;">-->
-      <!--<div style=" margin: auto;">-->
-      <!--<el-input placeholder="您的用户名或者邮箱" v-model="user_name" clearable>-->
-      <!--<template slot="prepend">用户名：</template>-->
-      <!--</el-input>-->
-      <!--</div>-->
-      <!--<div style=" margin: 30px auto auto;">-->
-      <!--<el-input placeholder="密码" type="password" v-model="user_password" clearable>-->
-      <!--<template slot="prepend">密　码：</template>-->
-      <!--</el-input>-->
-      <!--</div>-->
-      <!--</div>-->
-
-
       <span slot="footer" class="dialog-footer">
         <el-button @click="innerVisible = true">注册</el-button>
         <el-button style="text-align: center;" type="primary" @click="login">登录</el-button>
       </span>
     </el-dialog>
 
+
+
+
     <div>
       <h1>hello!</h1>
-
-
     </div>
   </div>
 </template>
