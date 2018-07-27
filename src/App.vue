@@ -1,94 +1,111 @@
 <template>
   <div id="app">
 
-    <h1>用户注册和登录内部对话框 调试</h1>
+    <h1> Tampermonkey 调试</h1>
 
     <p/>
-    <p/>
 
 
+    <div style="text-align:center">
+      <!--Tampermonkey h5代码开始点 -->
 
 
+      <el-popover placement="top-start" title="" width="100" trigger="hover" content="登录以后将获得邮件和微信 更新 提醒哦！">
+        <el-button type="primary" size="medium" slot="reference" @click="subscribeBtn">订阅按钮</el-button>
+      </el-popover>
 
-    <el-button @click="centerDialogVisible = true" type="primary">点击打开 Dialog</el-button>
+      <el-dialog title="提示" :visible.sync="centerDialogVisible" width="30%" center>
+          <span>{{ dialogText }}</span>
+          <span slot="footer" class="dialog-footer">
+           <el-button @click="cancelSub">取 消</el-button>
+           <el-button type="primary" @click="requestData">确 定</el-button>
+          </span>
+      </el-dialog>
 
-    <el-dialog
-      title="登录提醒"
-      :visible.sync="centerDialogVisible"
-      width="40%" center>
 
       <el-dialog
-        width="40%"
-        title="请先注册一个账号吧"
-        :visible.sync="innerVisible"
-        append-to-body>
+        title="登录提醒"
+        :visible.sync="centerDialogVisible"
+        width="40%" center>
 
-        <el-form :model="registerUserInfo" :rules="registerUserInfoRules" ref="registerUserInfo">
+        <el-dialog
+          width="40%"
+          title="请先注册一个账号吧"
+          :visible.sync="innerVisible"
+          append-to-body>
 
-          <el-form-item prop="r_name">
-            <el-input placeholder="您的用户名或者邮箱" type="text" v-model="registerUserInfo.r_name" clearable>
+          <el-form :model="registerUserInfo" :rules="registerUserInfoRules" ref="registerUserInfo">
+
+            <el-form-item prop="r_name">
+              <el-input placeholder="您的用户名或者邮箱" type="text" v-model="registerUserInfo.r_name" clearable>
+                <template slot="prepend">用 户 名：</template>
+              </el-input>
+            </el-form-item>
+
+            <el-form-item prop="r_password">
+              <el-input placeholder="密码" type="password" v-model="registerUserInfo.r_password" clearable>-->
+                <template slot="prepend">密　　码：</template>
+              </el-input>
+            </el-form-item>
+
+            <el-form-item prop="r_confirm_password">
+              <el-input placeholder="确认密码" type="password" v-model="registerUserInfo.r_confirm_password" clearable>
+                <template slot="prepend">确认密码：</template>
+              </el-input>
+            </el-form-item>
+
+            <el-form-item prop="r_email">
+              <el-input placeholder="邮箱地址" type="email" v-model="registerUserInfo.r_email" clearable>
+                <template slot="prepend">邮箱地址：</template>
+              </el-input>
+            </el-form-item>
+
+          </el-form>
+
+          <span slot="footer" class="dialog-footer">
+          <el-button @click="register(true)">取消</el-button>
+          <el-button style="text-align: center;" type="primary" @click="register(false)"
+                     :disabled="registerBtnState">确定</el-button>
+        </span>
+        </el-dialog>
+
+        <el-form :model="userInfo" :rules="registerUserInfoRules" ref="userInfo">
+          <el-form-item prop="user_name">
+            <el-input placeholder="您的用户名或者邮箱" type="text" v-model="userInfo.user_name" clearable>
               <template slot="prepend">用 户 名：</template>
             </el-input>
           </el-form-item>
 
-          <el-form-item prop="r_password">
-            <el-input placeholder="密码" type="password" v-model="registerUserInfo.r_password" clearable>-->
+          <el-form-item prop="user_password">
+            <el-input placeholder="密码" type="password" v-model="userInfo.user_password" clearable>
               <template slot="prepend">密　　码：</template>
             </el-input>
           </el-form-item>
-
-          <el-form-item prop="r_confirm_password">
-            <el-input placeholder="确认密码" type="password" v-model="registerUserInfo.r_confirm_password" clearable>
-              <template slot="prepend">确认密码：</template>
-            </el-input>
-          </el-form-item>
-
-          <el-form-item prop="r_email">
-            <el-input placeholder="邮箱地址" type="email" v-model="registerUserInfo.r_email" clearable>
-              <template slot="prepend">邮箱地址：</template>
-            </el-input>
-          </el-form-item>
-
         </el-form>
 
+        <div style="text-align: center">
+          <el-button type="text" size="mini">如有任何疑问请添加微信：gdky005</el-button>
+        </div>
+
         <span slot="footer" class="dialog-footer">
-          <el-button @click="register(true)">取消</el-button>
-          <el-button style="text-align: center;" type="primary" @click="register(false)" :disabled="registerBtnState">确定</el-button>
-        </span>
-      </el-dialog>
-
-      <el-form :model="userInfo" :rules="registerUserInfoRules" ref="userInfo">
-        <el-form-item prop="user_name">
-          <el-input placeholder="您的用户名或者邮箱" type="text" v-model="userInfo.user_name" clearable>
-            <template slot="prepend">用 户 名：</template>
-          </el-input>
-        </el-form-item>
-
-        <el-form-item prop="user_password">
-          <el-input placeholder="密码" type="password" v-model="userInfo.user_password" clearable>
-            <template slot="prepend">密　　码：</template>
-          </el-input>
-        </el-form-item>
-      </el-form>
-
-      <div style="text-align: center">
-        <el-button type="text" size="mini">如有任何疑问请添加微信：gdky005</el-button>
-      </div>
-
-      <span slot="footer" class="dialog-footer">
         <el-button @click="innerVisible = true">注册</el-button>
         <el-button style="text-align: center;" type="primary" @click="login">登录</el-button>
       </span>
 
-    </el-dialog>
+      </el-dialog>
 
 
+    </div>
 
+
+    <!--Tampermonkey h5代码结束点 -->
   </div>
 </template>
 
 <script>
   export default {
+    // Tampermonkey 《Vue 代码》 开始点
+
     name: 'App',
     data() {
 
@@ -133,7 +150,6 @@
           r_email: '',
         },
 
-
         // 密码校验规则
         registerUserInfoRules: {
 
@@ -159,13 +175,11 @@
           ]
         },
 
-
         //登录信息
         userInfo: {
           user_name: '',
           user_password: '',
         },
-
 
         //登录框状态
         centerDialogVisible: false,
@@ -174,6 +188,18 @@
 
         //状态
         registerBtnState: true,
+
+
+        // 订阅信息
+        message: "",
+        dialogText: "是否真的要订阅？",
+        dialogVisible: false,
+        centerDialogVisible: false,
+
+        // 影片订阅信息
+        name: '',
+        pid: '',
+        url: '',
       };
     },
     methods: {
@@ -237,6 +263,62 @@
           }
         });
       },
+
+      handleClose(done) {
+        this.$confirm('确认关闭？')
+          .then(_ => {
+            done();
+          }).catch(_ => {});
+      },
+
+      cancelSub() {
+        this.centerDialogVisible = false
+        this.$message({
+          message: '取消订阅',
+          type: 'warning'
+        });
+      },
+
+      subscribeBtn() {
+        this.centerDialogVisible = true;
+
+        var url = document.URL;
+        var name = $("h1.font14w")[0].innerText;
+        var pid = url.substring(url.lastIndexOf("/") + 1, url.length);
+        var msg = "url 是：" + url + ",\n名字：" + name + ",\nid：" + pid;
+
+        console.log(msg);
+        this.dialogText = msg;
+
+        this.pid = pid;
+        this.name = name;
+        this.url = url;
+      },
+
+      requestData() {
+        this.centerDialogVisible = false;
+
+        var params = 'pid=' + this.pid;
+        params+= '&name=' + this.name;
+        params+= '&url=' + this.url;
+
+        var that = this;
+
+        GM_xmlhttpRequest({
+          method: 'GET',
+          url: "http://zkteam.cc/Subscribe/add?" + params,
+          onload: function(result) {
+            //eval(result.responseText);
+            console.log(result.responseText);
+
+            that.$message({
+              message: '订阅成功！',
+              type: 'success'
+            });
+          }
+        });
+
+      }
     },
     watch: {
       registerUserInfo: {  // 这监听对象值的改变 和上面的不一样。
@@ -256,6 +338,8 @@
         // immediate: true
       },
     },
+
+    // Tampermonkey 《Vue 代码》 结束点
   }
 </script>
 
