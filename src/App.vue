@@ -222,11 +222,52 @@
             this.loginDialogState = false;
             this.innerVisible = false;
 
-            this.$notify({
-              title: '登录成功',
-              message: "当前登录用户是：" + name,
-              type: 'success'
+            var that = this;
+
+            var formData = new FormData();
+            formData.append("account", name);
+            formData.append("password", password);
+
+            GM_xmlhttpRequest({
+              method: 'POST',
+              url: "http://zkteam.cc/Subscribe/login/",
+              data: formData,
+              onload: function (result) {
+
+                that.subContentBtnState = false;
+
+                var responseContent = result.responseText;
+                console.log(responseContent);
+
+                var objs = JSON.parse(responseContent);
+                var code = objs['code'];
+                var message = objs['message'];
+
+                console.log(code + "," + message);
+
+                if (code === 0) {
+                  that.$notify({
+                    title: '登录成功',
+                    message: "当前登录用户是：" + name,
+                    type: 'success'
+                  });
+
+                  that.userIsLogin = true;
+
+                } else {
+                  that.$notify({
+                    title: '登录失败！',
+                    message: "。。。",
+                    type: 'error'
+                  });
+                  that.userIsLogin = false;
+                }
+
+                that.subDialogState = false;
+              }
             });
+
+
           } else {
             this.$message.error('请先根据页面提示修复错误');
             return true;
@@ -259,12 +300,51 @@
         this.$refs.registerUserInfo.validate((valid) => {
           if (valid) {
             this.innerVisible = false;
+            this.userIsLogin = false;
 
-            this.$notify({
-              title: '注册成功',
-              message: "您的账户名是：" + name,
-              type: 'success'
+            var that = this;
+
+            var formData = new FormData();
+            formData.append("account", name);
+            formData.append("password", password);
+            formData.append("password2", confirm_password);
+            formData.append("email", email);
+
+            GM_xmlhttpRequest({
+              method: 'POST',
+              url: "http://zkteam.cc/Subscribe/register/",
+              data: formData,
+              onload: function (result) {
+
+                that.subContentBtnState = false;
+
+                var responseContent = result.responseText;
+                console.log(responseContent);
+
+                var objs = JSON.parse(responseContent);
+                var code = objs['code'];
+                var message = objs['message'];
+
+                console.log(code + "," + message);
+
+                if (code === 0) {
+                  that.$notify({
+                    title: '注册成功',
+                    message: "您的账户名是：" + name,
+                    type: 'success'
+                  });
+                } else {
+                  that.$notify({
+                    title: '注册失败！',
+                    message: "。。。",
+                    type: 'error'
+                  });
+                }
+
+                that.subDialogState = false;
+              }
             });
+
           } else {
             this.$message.error('请先根据页面提示修复错误');
             return true;
