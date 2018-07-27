@@ -2,7 +2,6 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import ElementUI from 'element-ui';
-import Validator from 'vue-validator'
 import 'element-ui/lib/theme-chalk/index.css';
 import App from './App'
 
@@ -10,7 +9,6 @@ import App from './App'
 Vue.config.productionTip = false;
 
 Vue.use(ElementUI);
-Vue.use(Validator);
 
 /* eslint-disable no-new */
 new Vue({
