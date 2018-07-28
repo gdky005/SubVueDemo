@@ -187,12 +187,12 @@
         userInfo: {
           user_name: '',
           user_password: '',
+          user_email: '',
+          user_is_active: '',
         },
 
         //登录框状态
         loginDialogState: false,
-
-        dialogVisible: false,
         innerVisible: false,
 
         //状态
@@ -239,11 +239,17 @@
                 var responseContent = result.responseText;
                 console.log(responseContent);
 
+                // {"code": 0, "message": "ok", "result": {"username": "a", "email": "741227905@qq.com", "is_active": true}}
                 var objs = JSON.parse(responseContent);
                 var code = objs['code'];
                 var message = objs['message'];
+                var resultJson = objs['result'];
 
-                console.log(code + "," + message);
+                var l_name = resultJson['username'];
+                var l_email = resultJson['email'];
+                var l_is_active = resultJson['is_active'];
+
+                console.log(code + "," + message + "," + l_name);
 
                 if (code === 0) {
                   that.$notify({
@@ -253,6 +259,10 @@
                   });
 
                   that.userIsLogin = true;
+
+                  GM_setValue("name", l_name);
+                  GM_setValue("email", l_email);
+                  GM_setValue("is_active", l_is_active);
 
                 } else {
                   that.$notify({
@@ -369,6 +379,19 @@
       },
 
       subscribeBtn() {
+        var nameStr = GM_getValue("name", "");
+        var emailStr = GM_getValue("email", "");
+        var isActiveStr = GM_getValue("is_active", "");
+
+        console.log("存储的值是：" + nameStr + ", " + emailStr + ", " + isActiveStr);
+
+        if (nameStr && emailStr) {
+          this.subDialogState = true;
+          this.userIsLogin = true;
+          this.userInfo.user_name = nameStr;
+          this.userInfo.user_email = emailStr;
+          this.userInfo.user_is_active = isActiveStr;
+        }
 
         if (this.userIsLogin) {
           this.$message("你已经登录啦！");
