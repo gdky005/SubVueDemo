@@ -1,11 +1,12 @@
 <template>
   <div id="app">
 
+    <div>
+      <ZJ/>
+    </div>
+    <h1 style="background: gray; height: 1px"/>
     <h1> Tampermonkey 调试</h1>
-
     <p/>
-
-
     <div style="text-align:center">
       <!--Tampermonkey h5代码开始点 -->
 
@@ -101,10 +102,14 @@
 </template>
 
 <script>
+  import ZJ from "./components/ZJ"
   export default {
-    // Tampermonkey 《Vue 代码》 开始点
-
     name: 'App',
+    components: {
+      ZJ
+    },
+
+    // Tampermonkey 《Vue 代码》 开始点
     data() {
 
       var validateUserName = (rule, value, callback) => {
