@@ -15,8 +15,24 @@
         <el-button type="primary" size="medium" slot="reference" @click="subscribeBtn">订阅按钮</el-button>
       </el-popover>
 
-      <el-dialog title="提示" :visible.sync="subDialogState" width="30%" center>
-        <span>{{ dialogText }}</span>
+      <el-dialog title="订阅"  width="40%" :visible.sync="subDialogState" center>
+        <div style="text-align: left">
+          <span style="font-weight: bold"> hi, </span>
+          <p>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: red;font-weight: bold"> {{ userInfo.user_name }} </span>, 你要订阅的信息如下：</p>
+          <div style="background: rgba(191,157,42,0.29); padding: 10px; margin: 10px">
+            <el-input :placeholder="pid" type="text" :disabled="false" size="small">
+              <template slot="prepend"><span>ＩＤ：</span></template>
+            </el-input>
+
+            <el-input :placeholder="name" type="text" :disabled="false" size="small">
+              <template slot="prepend">影片：</template>
+            </el-input>
+
+            <el-input :placeholder="url" type="text" :disabled="false" size="small">
+              <template slot="prepend">网址：</template>
+            </el-input>
+          </div>
+        </div>
         <span slot="footer" class="dialog-footer">
            <el-button @click="cancelSub">取 消</el-button>
            <el-button type="primary" @click="subContent" :loading="subContentBtnState">确 定</el-button>
@@ -103,6 +119,7 @@
 
 <script>
   import ZJ from "./components/ZJ"
+
   export default {
     name: 'App',
     components: {
