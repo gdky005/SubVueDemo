@@ -15,28 +15,49 @@
         <el-button type="primary" size="medium" slot="reference" @click="subscribeBtn">订阅按钮</el-button>
       </el-popover>
 
-      <el-dialog title="订阅"  width="40%" :visible.sync="subDialogState" center>
-        <div style="text-align: left">
-          <span style="font-weight: bold"> hi, </span>
-          <p>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: red;font-weight: bold"> {{ userInfo.user_name }} </span>, 你要订阅的信息如下：</p>
-          <div style="background: rgba(191,157,42,0.29); padding: 10px; margin: 10px">
-            <el-input :placeholder="pid" type="text" :disabled="false" size="small">
-              <template slot="prepend"><span>ＩＤ：</span></template>
-            </el-input>
+      <el-dialog title="订阅"  width="50%" :visible.sync="subDialogState" center>
+        <el-container>
+          <el-container>
+            <el-main style="background: #FFFFE0" width="70%">
+              <div style="text-align: left">
+                <span style="font-weight: bold"> hi, </span>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: red;font-weight: bold"> {{ userInfo.user_name }} </span>, 你要订阅的信息如下：</p>
+                <div style="background: rgba(191,157,42,0.29); padding: 10px; margin: 10px">
+                  <el-input :placeholder="pid" type="text" :disabled="false" size="small">
+                    <template slot="prepend"><span>ＩＤ：</span></template>
+                  </el-input>
 
-            <el-input :placeholder="name" type="text" :disabled="false" size="small">
-              <template slot="prepend">影片：</template>
-            </el-input>
+                  <el-input :placeholder="name" type="text" :disabled="false" size="small">
+                    <template slot="prepend">影片：</template>
+                  </el-input>
 
-            <el-input :placeholder="url" type="text" :disabled="false" size="small">
-              <template slot="prepend">网址：</template>
-            </el-input>
-          </div>
-        </div>
+                  <el-input :placeholder="url" type="text" :disabled="false" size="small">
+                    <template slot="prepend">网址：</template>
+                  </el-input>
+
+                  <el-input :placeholder="last_fj_number" type="text" :disabled="false" size="small">
+                    <template slot="prepend">最新：</template>
+                  </el-input>
+                </div>
+              </div>
+            </el-main>
+            <el-aside style="background: #FDF5E6" width="30%">
+              <div style="text-align: center; padding: 10px">
+                <p><img width="80px" :src=wx_qr_code /></p>
+                <p>关注微信号免费获得微信订阅消息通知服务</p>
+              </div>
+            </el-aside>
+          </el-container>
+          <el-footer>
+            <p style="text-align: center; margin-top: 15px">
+              <el-button type="text">退出当前帐号</el-button>
+            </p>
+          </el-footer>
+        </el-container>
         <span slot="footer" class="dialog-footer">
-           <el-button @click="cancelSub">取 消</el-button>
-           <el-button type="primary" @click="subContent" :loading="subContentBtnState">确 定</el-button>
-          </span>
+          <el-button @click="cancelSub">取 消</el-button>
+          <el-button type="primary" @click="subContent" :loading="subContentBtnState">确 定</el-button>
+        </span>
       </el-dialog>
 
 
@@ -170,7 +191,7 @@
         subContentBtnState: false,
 
         // 用户登录的状态
-        userIsLogin: false,
+        userIsLogin: true,
 
         // 用户注册信息
         registerUserInfo: {
@@ -230,6 +251,10 @@
         name: '',
         pid: '',
         url: '',
+        last_fj_number: '',
+
+        // 微信二维码
+        wx_qr_code: "https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=679764585,617630770&fm=11&gp=0.jpg"
       };
     },
     methods: {
@@ -401,9 +426,15 @@
       },
 
       subscribeBtn() {
-        var nameStr = GM_getValue("name", "");
-        var emailStr = GM_getValue("email", "");
-        var isActiveStr = GM_getValue("is_active", "");
+        var nameStr = '';
+        var emailStr = '';
+        var isActiveStr = '';
+
+        nameStr = GM_getValue("name", "");
+        emailStr = GM_getValue("email", "");
+        isActiveStr = GM_getValue("is_active", "");
+
+
 
         console.log("存储的值是：" + nameStr + ", " + emailStr + ", " + isActiveStr);
 
@@ -426,10 +457,13 @@
         // return;
 
 
-        var url = document.URL;
-        var name = $("h1.font14w")[0].innerText;
-        var pid = url.substring(url.lastIndexOf("/") + 1, url.length);
-        var msg = "url 是：" + url + ",\n名字：" + name + ",\nid：" + pid;
+        var fj_list = $("tbody").find("tr").find("a");
+        var count = fj_list.length
+        var lastName = fj_list[count - 1].innerText
+        var last_fj_number = lastName.substring(0,lastName.indexOf("."))
+
+
+        var msg = "url 是：" + url + ",\n名字：" + name + ",\nid：" + pid + ",\nlast_fj_number：" + last_fj_number;
 
         console.log(msg);
         this.dialogText = msg;
@@ -437,6 +471,7 @@
         this.pid = pid;
         this.name = name;
         this.url = url;
+        this.last_fj_number = last_fj_number;
       },
 
       subContent() {
@@ -447,6 +482,7 @@
         var params = 'pid=' + this.pid;
         params += '&name=' + this.name;
         params += '&url=' + this.url;
+        params += '&number=' + this.last_fj_number;
 
         var that = this;
 
@@ -484,30 +520,48 @@
 
       },
 
-      requestData() {
-        this.subDialogState = false;
-
-        var params = 'pid=' + this.pid;
-        params += '&name=' + this.name;
-        params += '&url=' + this.url;
-
+      quitAccount() {
         var that = this;
 
         GM_xmlhttpRequest({
           method: 'GET',
-          url: "http://zkteam.cc/Subscribe/add?" + params,
+          url: "http://zkteam.cc/Subscribe/logout",
           onload: function (result) {
-            //eval(result.responseText);
-            console.log(result.responseText);
+            that.subContentBtnState = false;
 
-            that.$message({
-              message: '订阅成功！',
-              type: 'success'
-            });
+            var responseContent = result.responseText;
+            console.log(responseContent);
+
+            var objs = JSON.parse(responseContent);
+            var code = objs['code'];
+            var message = objs['message'];
+
+            console.log(code + "," + message);
+
+            if (code === 0) {
+              that.userIsLogin = false;
+
+              GM_setValue("name", "");
+              GM_setValue("email", "");
+              GM_setValue("is_active", "");
+
+              that.$message({
+                message: '退出登录成功！',
+                type: 'success'
+              });
+            } else {
+              that.$message({
+                showClose: true,
+                message: '退出登录失败!',
+                type: 'error'
+              });
+            }
+            that.subDialogState = false;
           }
         });
 
-      }
+      },
+
     },
     watch: {
       registerUserInfo: {  // 这监听对象值的改变 和上面的不一样。
