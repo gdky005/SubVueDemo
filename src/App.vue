@@ -232,6 +232,7 @@
           user_password: '',
           user_email: '',
           user_is_active: '',
+          user_id: "",
         },
 
         //登录框状态
@@ -295,8 +296,9 @@
                 var l_name = resultJson['username'];
                 var l_email = resultJson['email'];
                 var l_is_active = resultJson['is_active'];
+                var l_user_id = resultJson['user_id'];
 
-                console.log(code + "," + message + "," + l_name);
+                console.log(code + "," + message + "," + l_name + ", user_id:" + l_user_id);
 
                 if (code === 0) {
                   that.$notify({
@@ -306,10 +308,17 @@
                   });
 
                   that.userIsLogin = true;
+                  that.userInfo.name = l_name;
+                  that.userInfo.email = l_email;
+                  that.userInfo.is_active = l_is_active;
+                  that.userInfo.user_id = l_user_id;
 
                   GM_setValue("name", l_name);
                   GM_setValue("email", l_email);
                   GM_setValue("is_active", l_is_active);
+                  GM_setValue("user_id", l_user_id);
+
+                  that.requestQRCode()
 
                 } else {
                   that.$notify({
@@ -429,14 +438,16 @@
         var nameStr = '';
         var emailStr = '';
         var isActiveStr = '';
+        var userIdStr = '';
 
         nameStr = GM_getValue("name", "");
         emailStr = GM_getValue("email", "");
         isActiveStr = GM_getValue("is_active", "");
+        userIdStr = GM_getValue("user_id", "");
 
 
 
-        console.log("存储的值是：" + nameStr + ", " + emailStr + ", " + isActiveStr);
+        console.log("存储的值是：" + nameStr + ", " + emailStr + ", " + isActiveStr + ", :" + userIdStr);
 
         if (nameStr && emailStr) {
           this.subDialogState = true;
@@ -444,11 +455,14 @@
           this.userInfo.user_name = nameStr;
           this.userInfo.user_email = emailStr;
           this.userInfo.user_is_active = isActiveStr;
+          this.userInfo.user_id = userIdStr;
         }
 
         if (this.userIsLogin) {
           this.$message("你已经登录啦！");
           this.subDialogState = true;
+
+          this.requestQRCode();
         } else {
           this.$message("你还没登录呢！请先登录");
           this.loginDialogState = true;
@@ -518,6 +532,24 @@
           }
         });
 
+      },
+
+      requestQRCode() {
+        var that = this;
+        GM_xmlhttpRequest({
+          method: 'GET',
+          url: "https://www.zkteam.cc/Subscribe/wxQRcode/?user_id=" + this.userInfo.user_id,
+          onload: function (result) {
+            var responseContent = result.responseText;
+            console.log(responseContent);
+
+            var objs = JSON.parse(responseContent);
+            var resultObj = objs['result'];
+            var url = resultObj['url'];
+            that.wx_qr_code = url;
+
+          }
+        });
       },
 
       quitAccount() {
