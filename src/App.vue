@@ -495,6 +495,7 @@
 
         var params = 'pid=' + this.pid;
         params += '&name=' + this.name;
+        params += '&user_id=' + this.userInfo.user_id;
         params += '&url=' + this.url;
         params += '&number=' + this.last_fj_number;
 
