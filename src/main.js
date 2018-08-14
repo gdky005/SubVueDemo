@@ -105,10 +105,7 @@ const store = new Vuex.Store({
         objs = resultData;
         objs.message = resultData.result;
       } else {
-        const responseContent = obj.result.responseText;
-        console.log(responseContent);
-
-        objs = JSON.parse(responseContent);
+        objs = obj.result;
       }
 
 
