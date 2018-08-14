@@ -1,9 +1,17 @@
 <template>
   <div id="app">
 
-    <div>
-      <ZJ/>
+    <div style="margin: 30px">
+      <!--注册组件-->
+      <Register/>
     </div>
+
+    <!--<div>-->
+      <!--<ZJ/>-->
+    <!--</div>-->
+
+
+
     <h1 style="background: gray; height: 1px"/>
     <h1> Tampermonkey 调试</h1>
     <p/>
@@ -140,11 +148,13 @@
 
 <script>
   import ZJ from "./components/ZJ"
+  import Register from './components/Register'
 
   export default {
     name: 'App',
     components: {
-      ZJ
+      ZJ,
+      Register
     },
 
     // Tampermonkey 《Vue 代码》 开始点
