@@ -118,6 +118,99 @@
     },
     methods: {
 
+
+      login() {
+        let account = this.userInfo.user_name;
+        let password = this.userInfo.user_password;
+
+
+        this.$refs.userInfo.validate((valid) => {
+          if (valid) {
+            this.loginDialogState = false;
+            this.innerVisible = false;
+
+            let that = this;
+
+            let obj = {};
+            obj.that = that;
+            obj.account = account;
+            obj.password = password;
+
+
+            this.$store.dispatch('login', obj);
+
+          } else {
+            this.$message.error('请先根据页面提示修复错误');
+
+            return true;
+          }
+        });
+      },
+
+
+
+      resultCallBackForLogin(obj) {
+        let that = obj.that;
+
+        that.subContentBtnState = false;
+
+
+        let resultData = obj.result;
+        let objs;
+        let name;
+
+        if (resultData.code !== 0) {
+          objs = resultData;
+          objs.message = resultData.result;
+        } else {
+          objs = resultData;
+        }
+
+        let code = objs['code'];
+        let message = objs['message'];
+        let resultJson = objs['result'];
+
+        let l_name = resultJson['username'];
+        let l_email = resultJson['email'];
+        let l_is_active = resultJson['is_active'];
+        let l_user_id = resultJson['user_id'];
+
+        console.log(code + "," + message + "," + l_name + ", user_id:" + l_user_id);
+
+        if (code === 0) {
+          that.$notify({
+            title: '登录成功',
+            message: "当前登录用户是：" + l_name,
+            type: 'success'
+          });
+
+          that.userIsLogin = true;
+          that.userInfo.name = l_name;
+          that.userInfo.email = l_email;
+          that.userInfo.is_active = l_is_active;
+          that.userInfo.user_id = l_user_id;
+
+          name = l_name;
+
+          that.saveData(l_name, l_email, l_is_active, l_user_id);
+
+          // that.requestQRCode()
+
+        } else {
+          that.$notify({
+            title: '登录失败！',
+            message: "错误信息：" + message,
+            type: 'error'
+          });
+          that.userIsLogin = false;
+        }
+
+        that.subDialogState = false;
+        return name;
+      },
+
+
+      //保存用户数据到本地。
       saveData: function (l_name, l_email, l_is_active, l_user_id) {
         if (!this.zkIsDebug) {
           GM_setValue("name", l_name);
@@ -126,99 +219,10 @@
           GM_setValue("user_id", l_user_id);
         }
       },
-      // resultCallBack: function (that, result, name) {
-      //   that.subContentBtnState = false;
-      //
-      //   var responseContent = result.responseText;
-      //   console.log(responseContent);
-      //
-      //   // {"code": 0, "message": "ok", "result": {"username": "a", "email": "741227905@qq.com", "is_active": true}}
-      //   var objs = JSON.parse(responseContent);
-      //   var code = objs['code'];
-      //   var message = objs['message'];
-      //   var resultJson = objs['result'];
-      //
-      //   var l_name = resultJson['username'];
-      //   var l_email = resultJson['email'];
-      //   var l_is_active = resultJson['is_active'];
-      //   var l_user_id = resultJson['user_id'];
-      //
-      //   console.log(code + "," + message + "," + l_name + ", user_id:" + l_user_id);
-      //
-      //   if (code === 0) {
-      //     that.$notify({
-      //       title: '登录成功',
-      //       message: "当前登录用户是：" + name,
-      //       type: 'success'
-      //     });
-      //
-      //     that.userIsLogin = true;
-      //     that.userInfo.name = l_name;
-      //     that.userInfo.email = l_email;
-      //     that.userInfo.is_active = l_is_active;
-      //     that.userInfo.user_id = l_user_id;
-      //
-      //     this.saveData(l_name, l_email, l_is_active, l_user_id);
-      //
-      //     // that.requestQRCode()
-      //
-      //   } else {
-      //     that.$notify({
-      //       title: '登录失败！',
-      //       message: "。。。",
-      //       type: 'error'
-      //     });
-      //     that.userIsLogin = false;
-      //   }
-      //
-      //   that.subDialogState = false;
-      //   return name;
-      // },
-
-      login() {
-
-        var account = this.userInfo.user_name;
-        var password = this.userInfo.user_password;
 
 
-        this.$refs.userInfo.validate((valid) => {
-          if (valid) {
-            this.loginDialogState = false;
-            this.innerVisible = false;
-
-            var that = this;
-
-            var formData = new FormData();
-            formData.append("account", account);
-            formData.append("password", password);
 
 
-            var obj = {};
-            obj.account = account;
-            obj.password = password;
-            obj.that = that;
-
-
-            this.$store.dispatch('login', obj);
-
-            return true;
-
-            GM_xmlhttpRequest({
-              method: 'POST',
-              url: "http://zkteam.cc/Subscribe/login/",
-              data: formData,
-              onload: function (result) {
-                name = this.resultCallBack(that, result, name);
-              }
-            });
-
-
-          } else {
-            this.$message.error('请先根据页面提示修复错误');
-            return true;
-          }
-        });
-      },
     }
   }
 </script>
