@@ -37,14 +37,58 @@ const store = new Vuex.Store({
     isDebug: true
   },
   actions: {
-    // 封装一个 ajax 方法
-    // saveForm (context) {
-    //   axios({
-    //     method: 'post',
-    //     url: '/user',
-    //     data: context.state.test02
-    //   })
-    // }
+
+    registerRequest(context, obj) {
+      let that = obj.that;
+
+      let account = obj.account;
+      let password = obj.password;
+      let password2 = obj.password2;
+      let email = obj.email;
+
+      if (context.state.isDebug) {
+
+        let params = new URLSearchParams();
+        params.append('account', account);
+        params.append('password', password);
+        params.append('password2', password2);
+        params.append('email', email);
+
+        axios.post('http://127.0.0.1:8000/Subscribe/register/', params)
+          .then(function (res) {
+            console.log(res);
+            obj.result = res.data;
+            that.resultCallBackForRegister(obj);
+          })
+          .catch(function (err) {
+            console.log(err);
+            that.resultCallBackForRegister(obj);
+          });
+      } else {
+
+        let formData = new FormData();
+        formData.append("account", account);
+        formData.append("password", password);
+        formData.append("password2", password2);
+        formData.append("email", email);
+
+        GM_xmlhttpRequest({
+          method: 'POST',
+          url: "http://zkteam.cc/Subscribe/register/",
+          data: formData,
+          onload: function (result) {
+            var obj = {};
+            obj.that = that;
+            obj.result = result;
+            obj.name = name;
+            // that.$store.dispatch('resultCallBack', obj);
+            that.resultCallBackForRegister(obj);
+          }
+        });
+      }
+    },
+
+
 
 
     login(context, obj) {
@@ -69,67 +113,7 @@ const store = new Vuex.Store({
         });
     },
 
-    register(context, obj) {
 
-      var params = new URLSearchParams();
-      params.append('account', obj.name);
-      params.append('password', obj.password);
-      params.append('password2', obj.confirm_password);
-      params.append('email', obj.email);
-
-      // instance.post('http://zkteam.cc/Subscribe/register/', {
-      axios.post('http://127.0.0.1:8000/Subscribe/register/', params)
-        .then(function (res) {
-          console.log(res);
-          obj.result = res.data;
-          store.dispatch("resultCallBack", obj);
-        })
-        .catch(function (err) {
-          console.log(err);
-          obj.that.$notify({
-            title: '注册失败！',
-            message: "错误信息是：" + err.message,
-            type: 'error'
-          });
-        });
-    },
-
-    resultCallBack(context, obj) {
-      var that = obj.that;
-      that.subContentBtnState = false;
-
-      var resultData = obj.result;
-      var objs;
-
-      if (resultData.code !== 0) {
-        objs = resultData;
-        objs.message = resultData.result;
-      } else {
-        objs = obj.result;
-      }
-
-
-      const code = objs['code'];
-      const message = objs['message'];
-
-      console.log(code + "," + message);
-
-      if (code === 0) {
-        that.$notify({
-          title: '注册成功',
-          message: "您的账户名是：" + obj.name,
-          type: 'success'
-        });
-      } else {
-        that.$notify({
-          title: '注册失败！',
-          message: "。。。 错误信息是：" + message,
-          type: 'error'
-        });
-      }
-
-      that.subDialogState = false;
-    },
 
 
     resultLoginCallBack: function (that, obj) {

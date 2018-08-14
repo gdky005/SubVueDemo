@@ -114,6 +114,7 @@
       // }
 
       return {
+        loginIsDebug: this.$store.state.isDebug,
         //登录框状态
         loginDialogState: false,
         innerVisible: false,
@@ -153,6 +154,9 @@
           ]
         },
 
+
+
+        // 注册用户名
         register(isCancel) {
           if (isCancel) {
             this.$notify({
@@ -164,66 +168,82 @@
             return;
           }
 
-          var name = this.registerUserInfo.r_name;
-          var password = this.registerUserInfo.r_password;
-          var confirm_password = this.registerUserInfo.r_confirm_password;
-          var email = this.registerUserInfo.r_email;
+          let name = this.registerUserInfo.r_name;
+          let password = this.registerUserInfo.r_password;
+          let confirm_password = this.registerUserInfo.r_confirm_password;
+          let email = this.registerUserInfo.r_email;
 
-          var log = name + ", ";
+          let log = name + ", ";
           log += password + ", ";
           log += confirm_password + ", ";
           log += email + ", ";
-
-
-
-
 
           this.$refs.registerUserInfo.validate((valid) => {
             if (valid) {
               this.innerVisible = false;
               this.userIsLogin = false;
 
-              var that = this;
+              let that = this;
 
-              var formData = new FormData();
-              formData.append("account", name);
-              formData.append("password", password);
-              formData.append("password2", confirm_password);
-              formData.append("email", email);
+              // 注册接口请求
+              var obj = {};
+              obj.account = name;
+              obj.password = password;
+              obj.password2 = confirm_password;
+              obj.email = email;
+              obj.that = that;
 
-              var isDebug = this.$store.state.isDebug;
-
-              if (isDebug) {
-                // 注册接口请求
-                var obj = {};
-                obj.name = name;
-                obj.password = password;
-                obj.confirm_password = confirm_password;
-                obj.email = email;
-                obj.that = that;
-                this.$store.dispatch('register', obj);
-              } else {
-                GM_xmlhttpRequest({
-                  method: 'POST',
-                  url: "http://zkteam.cc/Subscribe/register/",
-                  data: formData,
-                  onload: function (result) {
-                    var obj = {};
-                    obj.that = that;
-                    obj.result = result;
-                    obj.name = name;
-                    // resultCallBack(that, obj);
-                    that.$store.dispatch('resultCallBack', obj);
-                  }
-                });
-              }
+              //发起请求
+              this.$store.dispatch('registerRequest', obj);
 
             } else {
               this.$message.error('请先根据页面提示修复错误');
+
               return true;
             }
           });
         },
+
+        // 请求返回成功后的处理方式
+        resultCallBackForRegister(obj) {
+          let that = obj.that;
+
+          let resultData = obj.result;
+          let objs;
+
+          that.subContentBtnState = false;
+
+          if (resultData.code !== 0) {
+            objs = resultData;
+            objs.message = resultData.result;
+          } else {
+            objs = obj.result;
+          }
+
+
+          let code = objs['code'];
+          let message = objs['message'];
+          let name = objs['result']['username'];
+
+          console.log(code + "," + message);
+
+          if (code === 0) {
+            that.$notify({
+              title: '注册成功',
+              message: "您的账户名是：" + name,
+              type: 'success'
+            });
+          } else {
+            that.$notify({
+              title: '注册失败！',
+              message: "错误信息是：" + message,
+              type: 'error'
+            });
+          }
+
+          that.subDialogState = false;
+        },
+
       }
     },
     watch: {
