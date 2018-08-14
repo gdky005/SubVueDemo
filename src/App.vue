@@ -9,11 +9,6 @@
 
     </div>
 
-    <!--<div>-->
-      <!--<ZJ/>-->
-    <!--</div>-->
-
-
 
     <h1 style="background: gray; height: 1px"/>
     <h1> Tampermonkey 调试</h1>
@@ -150,7 +145,6 @@
 </template>
 
 <script>
-  import ZJ from "./components/ZJ"
   import Register from './components/Register'
   import Login from './components/Login'
   import Subscribe from './components/Subscribe'
@@ -158,7 +152,6 @@
   export default {
     name: 'App',
     components: {
-      ZJ,
       Register,
       Login,
       Subscribe,
