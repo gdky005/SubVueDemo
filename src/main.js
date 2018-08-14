@@ -88,9 +88,6 @@ const store = new Vuex.Store({
       }
     },
 
-
-
-
     login(context, obj) {
       let that = obj.that;
       let account = obj.account;
@@ -133,10 +130,96 @@ const store = new Vuex.Store({
 
     },
 
+    quitAccount(context, that) {
+      if (context.state.isDebug) {
+        axios.get('http://127.0.0.1:8000/Subscribe/logout/')
+          .then(function (res) {
+            console.log(res);
+            that.resultCallBackForQuitAccount(that, res.data);
+          })
+          .catch(function (err) {
+            console.log(err);
+            that.resultCallBackForQuitAccount(that, err);
+          });
+
+      } else {
+        GM_xmlhttpRequest({
+          method: 'GET',
+          url: "http://zkteam.cc/Subscribe/logout",
+          onload: function (result) {
+            console.log(result);
+            that.resultCallBackForQuitAccount(that, result);
+          }
+        });
+      }
+    },
+
+
+    subContent(context, obj) {
+      let that = obj.that;
+
+      let pid = obj.pid;
+      let name = obj.name;
+      let user_id = obj.user_id;
+      let url = obj.url;
+      let last_fj_number = obj.last_fj_number;
+
+      var params = 'pid=' + pid;
+      params += '&name=' + name;
+      params += '&user_id=' + user_id;
+      params += '&url=' + url;
+      params += '&number=' + last_fj_number;
+
+
+      if (context.state.isDebug) {
+        axios.get('http://zkteam.cc/Subscribe/add?' + params)
+          .then(function (res) {
+            console.log(res);
+            that.resultCallBackForSub(that, res.data);
+          })
+          .catch(function (err) {
+            console.log(err);
+            that.resultCallBackForSub(that, err);
+          });
+      } else {
+        GM_xmlhttpRequest({
+          method: 'GET',
+          url: "http://zkteam.cc/Subscribe/add?" + params,
+          onload: function (result) {
+            that.resultCallBackForSub(that, result);
+          }
+        });
+      }
+    },
 
 
 
+    qrCode(context, obj) {
+      let that = obj.that;
+      let user_id = obj.user_id;
 
+      if (context.state.isDebug) {
+        axios.get('http://127.0.0.1:8000/Subscribe/wxQRcode/?user_id='  + user_id)
+          .then(function (res) {
+            console.log(res);
+            that.resultCallBackForQRCode(that, res.data);
+          })
+          .catch(function (err) {
+            console.log(err);
+            that.resultCallBackForQRCode(that, err);
+          });
+
+      } else {
+        GM_xmlhttpRequest({
+          method: 'GET',
+          url: "https://www.zkteam.cc/Subscribe/wxQRcode/?user_id=" + user_id,
+          onload: function (result) {
+            console.log(result);
+            that.resultCallBackForQRCode(that, result);
+          }
+        });
+      }
+    },
 
 
 

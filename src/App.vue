@@ -5,6 +5,7 @@
       <!--注册组件-->
       <Register/>
       <Login/>
+      <Subscribe/>
 
     </div>
 
@@ -60,7 +61,7 @@
           </el-container>
           <el-footer>
             <p style="text-align: center; margin-top: 15px">
-              <el-button type="text">退出当前帐号</el-button>
+              <el-button type="text" @click="quitAccount">退出当前帐号</el-button>
             </p>
           </el-footer>
         </el-container>
@@ -152,13 +153,15 @@
   import ZJ from "./components/ZJ"
   import Register from './components/Register'
   import Login from './components/Login'
+  import Subscribe from './components/Subscribe'
 
   export default {
     name: 'App',
     components: {
       ZJ,
       Register,
-      Login
+      Login,
+      Subscribe,
     },
 
     // Tampermonkey 《Vue 代码》 开始点
