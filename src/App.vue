@@ -4,6 +4,8 @@
     <div style="margin: 30px">
       <!--注册组件-->
       <Register/>
+      <Login/>
+
     </div>
 
     <!--<div>-->
@@ -149,12 +151,14 @@
 <script>
   import ZJ from "./components/ZJ"
   import Register from './components/Register'
+  import Login from './components/Login'
 
   export default {
     name: 'App',
     components: {
       ZJ,
-      Register
+      Register,
+      Login
     },
 
     // Tampermonkey 《Vue 代码》 开始点
