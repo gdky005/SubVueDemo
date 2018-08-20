@@ -1,5 +1,6 @@
 <template>
   <div style="margin: 30px">
+    订阅中-start
 
 
     <el-popover placement="top-start" title="" width="100" trigger="hover" content="登录以后将获得邮件和微信 更新 提醒哦！">
@@ -51,7 +52,7 @@
         </span>
     </el-dialog>
 
-
+    订阅中-end
 
   </div>
 </template>
